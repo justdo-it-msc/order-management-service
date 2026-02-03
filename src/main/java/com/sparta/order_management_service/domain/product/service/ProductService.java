@@ -48,16 +48,13 @@ public class ProductService {
 
     /// 상품 수정
     @Transactional
-    public ProductResponseDto updateProduct(
-            Long id,
-            ProductRequestDto requestDto
-    ) {
+    public ProductResponseDto updateProduct(Long id, ProductRequestDto requestDto) {
         ProductEntity productEntity = findProductOrThrow(id);
         productEntity.update(requestDto.getName(), requestDto.getPrice(), requestDto.getStock());
         return ProductResponseDto.fromEntity(productRepository.save(productEntity));
     }
 
-    // 상품 삭제
+    /// 상품 삭제
     @Transactional
     public void deleteProduct(Long id) {
         ProductEntity productEntity = findProductOrThrow(id);

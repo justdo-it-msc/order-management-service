@@ -5,12 +5,15 @@ import com.sparta.order_management_service.domain.order.dto.OrderResponseDto;
 import com.sparta.order_management_service.domain.order.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -24,10 +27,10 @@ public class OrderController {
     @Operation(summary = "주문 등록", description = "새로운 주문을 등록합니다.")
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(
-            @RequestBody OrderRequestDto requestDto
+            @Valid @RequestBody OrderRequestDto requestDto
     ) {
         OrderResponseDto responseDto = orderService.createOrder(requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body((responseDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     /// 주문 단건 조회
@@ -41,11 +44,13 @@ public class OrderController {
     }
 
     /// 주문 목록 조회
-    @Operation(summary = "주문 목록 조회", description = "전체 주문 목록을 조회합니다.")
+    @Operation(summary = "주문 목록 조회", description = "전체 주문 목록을 페이지네이션으로 조회합니다.")
     @GetMapping
-    public ResponseEntity<List<OrderResponseDto>> getAllOrders() {
-        List<OrderResponseDto> responseDtoList = orderService.getAllOrders();
-        return ResponseEntity.ok(responseDtoList);
+    public ResponseEntity<Page<OrderResponseDto>> getAllOrders(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        Page<OrderResponseDto> responseDtoPage = orderService.getAllOrders(pageable);
+        return ResponseEntity.ok(responseDtoPage);
     }
 
     /// 주문 수정
@@ -53,7 +58,7 @@ public class OrderController {
     @PutMapping("/{id}")
     public ResponseEntity<OrderResponseDto> updateOrder(
             @PathVariable Long id,
-            @RequestBody OrderRequestDto requestDto
+            @Valid @RequestBody OrderRequestDto requestDto
     ) {
         OrderResponseDto responseDto = orderService.updateOrder(id, requestDto);
         return ResponseEntity.ok(responseDto);

@@ -5,6 +5,7 @@ import com.sparta.order_management_service.domain.product.dto.ProductResponseDto
 import com.sparta.order_management_service.domain.product.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class ProductController {
     @Operation(summary = "상품 등록", description = "새로운 상품을 등록합니다.")
     @PostMapping
     public ResponseEntity<ProductResponseDto> createProduct(
-            @RequestBody ProductRequestDto requestDto
+            @Valid @RequestBody ProductRequestDto requestDto
     ) {
         ProductResponseDto responseDto = productService.createProduct(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
@@ -53,7 +54,7 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDto> updateProduct(
             @PathVariable long id,
-            @RequestBody ProductRequestDto requestDto
+            @Valid @RequestBody ProductRequestDto requestDto
     ) {
         ProductResponseDto responseDto = productService.updateProduct(id, requestDto);
         return ResponseEntity.ok(responseDto);
